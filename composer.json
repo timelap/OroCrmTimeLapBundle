@@ -1,5 +1,5 @@
 {
-    "name": "ra/orocrm-timelap-bundle",
+    "name": "timelap/orocrm-timelap-bundle",
     "description": "OroCRM time tracking bundle",
     "homepage": "http://timelap.org",
     "license": "MIT",
