@@ -1,0 +1,32 @@
+{
+    "name": "ra/orocrm-timelap-bundle",
+    "description": "OroCRM time tracking bundle",
+    "homepage": "http://timelap.org",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "RA",
+            "homepage": "http://timelap.org"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "RA\\OroCrmTimeLapBundle": "."
+        }
+    },
+    "target-dir": "RA/OroCrmTimeLapBundle",
+    "require": {
+        "php": ">=5.4.4",
+        "oro/crm": "1.7.*"
+    },
+    "require-dev": {
+        "eltrino/phpunit-mockannotations": "*"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    }
+}

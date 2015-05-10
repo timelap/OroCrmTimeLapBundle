@@ -1,0 +1,82 @@
+{% import 'OroUIBundle::macros.html.twig' as UI %}
+
+{% if tasks|length > 0 %}
+    <div class="timelap-widget-header" style="background: transparent">
+        <span id="timelap_widget_watch">00:00:00</span>
+        <span style="float: right">
+            <a href="#" id="timelap_widget_stop_link" class=" no-hash">
+                <i class="icon-stop hide-text hide-text"></i></a>
+        </span>
+    </div>
+
+    <div class="timelap-widget">
+    {% for task in tasks %}
+        <div id="task_{{ task.id }}" class="timelap-widget-task">
+        {% set totalTimeSpent = timelap_task_worklog_total_timespent(task)
+                                ? timelap_task_worklog_total_timespent(task)
+                                : '00h 00m 00s' %}
+            <div class="task-widget-row timelap-widget-task-row"
+                 data-url="{{ path("orocrm_task_view", {'id':task.id}) }}">
+                <span class="task-subject">{{ task.subject }}</span>
+            </div>
+            <div class="timelap-widget-task-bottom">
+                <span class="task-date-time">{{ totalTimeSpent }}</span>
+                <div style="float: right"><a href="#" id="{{ task.id }}" class="timelap_widget_play_link no-hash">
+                    <i class="icon-play hide-text hide-text"></i></a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+        <script type="text/javascript">
+            require(['jquery', 'raorocrmtimelap/js/timer', 'routing', 'oroui/js/mediator'],
+                    function($, Timer, routing, mediator) {
+
+                        var containerId = "timelap_widget_watch";
+                        var timer = Timer.getInstance();
+
+                        var getRecordUrl  = routing.generate('timelap_get_record');
+                        var stopRecordUrl = routing.generate('timelap_stop_record');
+
+                        timer.getRecord(processData, getRecordUrl);
+
+                        function processData(data)
+                        {
+                            timer.init(getRecordUrl);
+                            timer.addContainer(containerId);
+
+                            var taskId = data['taskId'];
+                            $('#task_' + taskId).css("background-color", "#E8F4FF");
+                        }
+
+                        $('.timelap_widget_play_link').on('click', function () {
+                            mediator.execute('showLoading');
+                            var timer = Timer.getInstance();
+                            var startRecordUrl = routing.generate('timelap_start_record', {taskId: $(this).attr('id')});
+                            timer.start(startRecordUrl);
+                            timer.addContainer(containerId);
+
+                            var task = timer.getTask();
+                            $('#task_' + task['taskId']).css("background-color", "#E8F4FF");
+
+                            mediator.execute('refreshPage');
+                        });
+
+                        $('#timelap_widget_stop_link').on('click', function () {
+                            mediator.execute('showLoading');
+
+                            var task = timer.getTask();
+                            $('#task_' + task['taskId']).css("background-color", "");
+
+
+                            timer.stop(stopRecordUrl);
+                            mediator.execute('refreshPage');
+
+                        });
+                    });
+        </script>
+    </div>
+{% else %}
+    <p class="no_tasks">
+        {{ "orocrm.task.assigned_tasks_widget.no_task_exist"|trans }}
+    </p>
+{% endif %}

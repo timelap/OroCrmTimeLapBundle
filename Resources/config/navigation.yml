@@ -1,0 +1,23 @@
+oro_menu_config:
+    items:
+        current_user_timesheet:
+            label: 'Timesheet'
+            route: 'timelap_current_user_current_month_timesheet'
+            extras:
+                position: 100
+                routes: ['orocrm_task_*']
+                description: 'Current User Timesheet'
+
+    tree:
+        application_menu:
+            children:
+                activities_tab:
+                    children:
+                        current_user_timesheet: ~
+
+oro_titles:
+    timelap_worklog_create: 'Create Work Log'
+    timelap_worklog_edit: 'Edit Work Log'
+    timelap_current_user_current_month_timesheet: 'Timesheet'
+    timelap_current_user_month_timesheet: 'Timesheet'
+    timelap_user_timesheet: 'Timesheet'

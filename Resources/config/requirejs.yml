@@ -1,0 +1,4 @@
+config:
+    paths:
+        'raorocrmtimelap/js/tock': 'bundles/raorocrmtimelap/js/timer.js'
+        'raorocrmtimelap/sidebar/widget/timetracking': 'bundles/raorocrmtimelap/sidebar_widgets/timetracking/js/widget.js'

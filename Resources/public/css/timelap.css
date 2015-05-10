@@ -1,0 +1,88 @@
+.worklogs {
+    margin: 0 0 1em;
+}
+
+.worklog {
+    padding: 1em;
+    padding-left: 6.5em ;
+}
+
+.worklog:nth-child(odd) {
+    background: #fafafa;
+}
+
+.worklog:hover {
+    background: #eee;
+}
+
+.worklog-user-image {
+    float: left;
+    margin-left: -5.5em;
+}
+
+.worklog-meta {
+    margin: 0 0 .8em;
+}
+
+.worklog:after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.calendar th, td.weekend {
+    background-color: #e7e7e7;
+}
+
+.calendar th, td.work {
+    background-color: white;
+}
+
+.calendar td.right {
+    text-align: right;
+}
+
+.calendar td.grey {
+    color: grey;
+    font-weight: 400;
+}
+
+.calendar th.number {
+    background-color: #5484ED !important;
+    text-align: center !important;
+}
+
+.calendar-container {
+    width: 100%;
+    position: relative;
+    margin-top: 10px;
+    overflow-x: auto;
+    overflow-y: visible;
+}
+
+.timsheet-user-select form .control-label {
+    display: none;
+}
+
+.timelap-widget .task-subject {
+    color: black !important;
+}
+
+.timelap-widget-header {
+    color: #ffffff !important;
+    padding: 7px 9px 0 9px !important;
+    background-color: #EEC147 !important;
+}
+
+.timelap-widget-task-bottom  {
+    padding: 7px 9px 0 9px !important;
+}
+
+.timelap-widget-task {
+    border-bottom: 1px solid lightgrey;
+}
+
+.timelap-widget-task-row {
+    overflow: visible !important;
+    border: none !important;
+}

@@ -1,0 +1,2 @@
+bundles:
+    - { name: RA\OroCrmTimeLapBundle\RAOroCrmTimeLapBundle, priority: 2000 }

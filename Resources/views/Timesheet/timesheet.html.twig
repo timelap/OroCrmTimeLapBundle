@@ -1,0 +1,165 @@
+{% extends 'OroUIBundle:actions:index.html.twig' %}
+{% import 'OroUIBundle::macros.html.twig' as UI %}
+
+{% set fullName = timesheet.getUser.getFirstName ~ ' ' ~ timesheet.getUser.getLastName %}
+{% set pageTitle = 'Timesheet' %}
+{% set test = fullName ~ ': ' ~ month.getBegin|date('d/M/y', false) ~ ' - ' ~ month.getEnd|date('d/M/y', false) %}
+
+{% set previousMonth = month.begin|date_modify("-1 month") %}
+{% set nextMonth = month.begin|date_modify("+1 month") %}
+
+{% set avatar = oro_configured_image_url(timesheet.getUser, 'avatar') %}
+{% block content %}
+    <div class="layout-content">
+        <div class="container-fluid page-title">
+            <div class="navigation clearfix navbar-extra navbar-extra-right">
+                <div class="row">
+                    <div class="pull-left pull-left-extra">
+                        {% block pageHeader %}
+                            <div class="pull-left">
+                                <div class="timsheet-user-select">
+                                    <form action="#">
+                                        {{ form_row(user_select_form) }}
+                                    </form>
+                                </div>
+                                <script type="text/javascript">
+                                    require(['jquery', 'routing', 'oroui/js/mediator'],
+                                            function($, routing, mediator){
+                                                $('#timesheet_user').on('change', function (e) {
+                                                    var userId = e.val;
+                                                    var url = routing.generate('timelap_user_timesheet', {id: userId, month: "{{ month.begin|date('Y-m', false) }}"});
+                                                    mediator.execute('redirectTo', {url: url}, {redirect: true});
+                                                });
+                                            });
+                                </script>
+                            </div>
+                            <div class="clearfix customer-info well-small{% if avatar is not defined %} customer-simple{% endif %}">
+                                {% if avatar is defined %}
+                                    <div class="visual">
+                                        <img src="{{ avatar ? avatar : asset('bundles/oroui/img/info-user.png') }}" />
+                                    </div>
+                                {% endif %}
+                                <div class="customer-content pull-left">
+                                    <div class="clearfix">
+                                        {% block breadcrumbs %}
+                                            <div class="pull-left">
+                                                <h1 class="user-name">{{ fullName }}</h1>
+                                            </div>
+                                        {% endblock breadcrumbs %}
+                                    </div>
+                                    <div class="clearfix">
+                                        <ul class="inline">
+                                            <li>
+                                                <a href="{{ path('timelap_user_timesheet',
+                                                    {
+                                                        id: timesheet.getUser.getId,
+                                                        'month': previousMonth|date('Y-m', false)
+                                                    }) }}"
+                                                    class="action no-hash">
+                                                    <i class="icon-caret-left"></i>
+                                                </a>
+                                            </li>
+                                            <li>
+                                              <strong>  {{ month.begin|date('d/M/y', false) }} - {{ month.end|date('d/M/y', false) }}</strong>
+                                            </li>
+                                            <li>
+                                                <a href="{{ path('timelap_user_timesheet',
+                                                    {
+                                                        id: timesheet.getUser.getId,
+                                                        'month': nextMonth|date('Y-m', false)
+                                                    }) }}"
+                                                   class="action no-hash">
+                                                   <i class="icon-caret-right"></i>
+                                                </a>
+                                            </li>
+                                            {% if isMobileVersion() %}
+                                                {% set ownerLink = UI.entityOwnerLink(entity) %}
+                                                {% if ownerLink %}
+                                                    <li>{{ ownerLink }}</li>
+                                                {% endif %}
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endblock pageHeader %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="container-fluid">
+            {% if timesheet.listTasks.isEmpty() %}
+                <div class="no-data" style="display: block;"><span>No records found<span></span></span></div>
+            {% else %}
+                <div class="calendar-container">
+                    <table class="calendar table-hover table table-bordered" style="max-width: inherit;
+                    white-space: nowrap; font-size: 12px;">
+                        <thead>
+                        <tr>
+                            <th colspan="2">&nbsp;</th>
+                            {% for key, day in month %}
+                                <th class="number">
+                                    {{ day|date('d', false) }}
+                                </th>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            <th>Subject</th>
+                            <th>&sum;</th>
+                            {% for day in month %}
+                                <th class="{{ timelap_is_weekend(day) ? 'weekend' : 'work' }}">
+                                    {{ day|date('D', false) }}
+                                </th>
+                            {% endfor %}
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        {% if timesheet.listTasks.isEmpty() %}
+                            <tr>
+                                <td colspan="{{ month.begin|date('j') }}">Timesheet is empty</td>
+                            </tr>
+                        {% endif %}
+                        {% for task in timesheet.listTasks %}
+                            <tr>
+                                <td><a href="{{ path('orocrm_task_view', {'id':task.id}) }}">{{ task.getSubject }}</a></td>
+                                <td>{{ task.getTotalTimeSpent }}</td>
+                                {% for day in month %}
+                                    <td class="{{ timelap_is_weekend(day) ? 'weekend' : 'work' }} fc-day fc-widget-content fc-sun fc-past">
+                                        {{ task.totalTimeSpentForDate(day) }}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <td colspan="2" class="right grey">Daily hours total:</td>
+                            {% for day in month %}
+                                <td>
+                                    {{ timesheet.totalTimeSpentPerDate(day) }}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="right grey">Weekly hours total:</td>
+                            {% for day in month %}
+                                <td>
+                                    {% if timelap_is_last_day_of_week(day) %}
+                                        {{ timesheet.weeklyTotalTimeSpentPerDate(day) }}
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <h5>Total per month: {{ timesheet.totalTimeSpent }}</h5>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock content %}

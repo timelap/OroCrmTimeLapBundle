@@ -1,0 +1,146 @@
+{% import 'OroUIBundle::macros.html.twig' as UI %}
+
+{% set totalTimeSpent = timelap_task_worklog_total_timespent(entity) %}
+{% set entries = timelap_task_worklog_entries(entity) %}
+<div class="responsive-cell responsive-cell-no-blocks">
+<div class="row-fluid ">
+    <div class="widget-content notes comments" data-wid="54a3feb9c25df1-58648965">
+        <div class="box-type1">
+            <div class="title">
+            <span class="widget-title">
+                Logged: {{ totalTimeSpent }}
+                <div id="timelap_watch">
+                </div>
+            </span>
+            </div>
+        </div>
+        <div class="accordion" id="comment-list">
+            <div class="items list-box">
+            {% for entry in entries %}
+                {% if (timelap_get_user_avatar(entry.user)) %}
+                    {% set userAvatar = timelap_get_user_avatar(entry.user) %}
+                {% else %}
+                    {% set userAvatar = asset('bundles/oroui/img/avatar-xsmall.png') %}
+                {% endif %}
+                <div class="list-item" style="opacity: 1;">
+                    <div class="accordion-group">
+                        <div class="accordion-heading collapse out">
+                            <div class="title-item">
+                                <span class="visual">
+                                    <img src="{{ userAvatar }}" />
+                                    <a class="user" href="{{ timelap_get_user_url(entry.user) }}">{{ entry.userFullName }}</a>
+                                </span>
+                                <span class="details">
+                                    <i class="date">{{ entry.dateStarted|oro_format_datetime }}</i>
+                                </span>
+                            </div>
+                            <div class="message-item">
+                                <div class="message">
+                                    <b>Time Spent: {{ entry.timeSpent }}</b>
+                                </div>
+                            </div>
+                            <div class="actions">
+                                {{ UI.clientLink({
+                                'dataUrl': path('timelap_worklog_edit', {'worklogId': entry.id}) ,
+                                'aCss': 'btn item-edit-button',
+                                'iCss': 'icon-edit hide-text',
+                                'title' : 'timelap.task.title.edit_worklog'|trans,
+                                'widget' : {
+                                'type' : 'dialog',
+                                'multiple' : false,
+                                'options' : {
+                                'alias': 'worklog-dialog',
+                                'dialogOptions' : {
+                                'title' : 'edit',
+                                'allowMaximize': true,
+                                'allowMinimize': true,
+                                'dblclick': 'maximize',
+                                'maximizedHeightDecreaseBy': 'minimize-bar',
+                                'width': 550
+                                }
+                                }
+                                }
+                                }) }}
+
+                                <a href="#" data-url = "{{ path('timelap_worklog_delete', {'taskId': entry.task.id, 'worklogId': entry.id}) }}"
+                                   class="btn item-remove-button delete-item-confirmation">
+                                    <i class="icon-trash hide-text">Remove</i></a>
+                            </div>
+                        </div>
+                        <div class="accordion-body collapse in">
+                            <div class="message">
+                                {{ entry.description }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        require(['jquery', 'oroui/js/modal', 'oroui/js/mediator',
+                    'orotranslation/js/translator', 'raorocrmtimelap/js/timer', 'routing'],
+                function($, Modal, mediator, __, Timer, routing) {
+
+                    var containerId = "timelap_watch";
+                    var taskId = "{{ entity.id }}";
+                    var timer = Timer.getInstance();
+
+                    var getRecordUrl   = routing.generate('timelap_get_record');
+                    var startRecordUrl = routing.generate('timelap_start_record', {taskId: taskId});
+                    var stopRecordUrl  = routing.generate('timelap_stop_record');
+
+                    timer.getRecord(processData, getRecordUrl);
+
+                    function processData(data)
+                    {
+                        var recordTaskId = data['taskId'];
+                        if (recordTaskId != taskId) {return;}
+
+                        timer.init(getRecordUrl);
+                        timer.addContainer(containerId);
+                    }
+
+                    $('#start').on('click', function () {
+                        mediator.execute('showLoading');
+                        timer.start(startRecordUrl);
+                        timer.addContainer(containerId);
+                        mediator.execute('refreshPage');
+                    });
+
+                    $('#stop').on('click', function () {
+                        mediator.execute('showLoading');
+                        timer.stop(stopRecordUrl);
+                        mediator.execute('refreshPage');
+                    });
+
+                    $('.delete-item-confirmation').click(function (e) {
+                        e.preventDefault();
+                        var url = $(this).data('url');
+
+                        if (dialog) {
+                            dialog.close();
+                            dialog.remove();
+                        }
+
+                        var dialog = new Modal({
+                            content: '{{ 'timelap.worklog.messages.delete.query'|trans }}',
+                            okText: '{{ 'timelap.common.delete'|trans }}',
+                            cancelText: '{{ 'timelap.common.cancel'|trans }}',
+                            title: __('{{ 'timelap.common.delete_confirmation'|trans }}'),
+                            className: 'modal oro-modal-danger'
+                        });
+
+                        dialog.open(function () {
+                            mediator.execute('showLoading');
+                            mediator.execute('redirectTo', {url:url});
+                        });
+                    })
+                });
+    </script>
+</div>
+
+

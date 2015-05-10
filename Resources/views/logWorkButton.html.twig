@@ -1,0 +1,52 @@
+{% import 'OroUIBundle::macros.html.twig' as UI %}
+<div class="btn-group">
+{% set tracker = timelap_user_tracker() %}
+{{
+UI.clientButton({
+    'dataUrl': path('timelap_worklog_create', { 'taskId': entity.id }) ,
+    'aCss': 'no-hash',
+    'iCss': 'icon-pencil hide-text',
+    'label': 'timelap.task.actions.create_worklog'|trans,
+    'widget' : {
+        'type' : 'dialog',
+        'multiple' : false,
+        'options' : {
+            'alias': 'worklog-dialog',
+            'dialogOptions' : {
+                'title' : 'timelap.task.actions.create_worklog'|trans,
+                'allowMaximize': true,
+                'allowMinimize': true,
+                'dblclick': 'maximize',
+                'maximizedHeightDecreaseBy': 'minimize-bar',
+                'width': 550
+            }
+        }
+    }
+})
+}}
+
+{% if tracker %}
+    {{
+    UI.clientButton({
+        'title': 'Stop timer',
+        'path': '#',
+        'id': 'stop',
+        'aCss': 'no-hash',
+        'iCss': 'icon-stop hide-text',
+        'label': 'Stop timer',
+    })
+    }}
+{% else %}
+    {{
+    UI.clientButton({
+        'title': 'Start timer',
+        'path': '#',
+        'id': 'start',
+        'aCss': 'no-hash',
+        'iCss': 'icon-play hide-text',
+        'label': 'Start timer',
+    })
+    }}
+{% endif %}
+
+</div>

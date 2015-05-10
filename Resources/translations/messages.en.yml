@@ -1,0 +1,26 @@
+timelap:
+    task:
+        actions:
+            create_worklog: Log Work
+            edit_worklog: Edit WorkLog
+        title:
+          edit_worklog: Edit Worklog
+    common:
+        delete_confirmation: Confirm Deletion
+        delete: Delete
+        cancel: Cancel
+    worklog:
+        messages:
+            delete:
+                query: Are you sure you want to delete this Worklog entry?
+        controller:
+            saved:
+                message: Woklog saved
+            deleted:
+                message: Worklog deleted
+    timetracking:
+        controller:
+            started:
+                message: TimeTracker have been started
+            stopped:
+                message: TimeTracker have been stopped

@@ -1,0 +1,46 @@
+{% set entity = form.vars.value %}
+{% set entityId = entity.id %}
+
+{% set formAction = entityId ? path('timelap_worklog_save', {'worklogId': entityId, 'no_redirect': true}) : path('timelap_worklog_save', {'worklogId': 0, 'no_redirect': true}) %}
+
+<div class="widget-content call-form">
+    {% if saved is defined and saved %}
+    <script type="text/javascript">
+        require(['underscore', 'orotranslation/js/translator', 'oroui/js/widget-manager',
+                    'oroui/js/messenger', 'oroui/js/mediator'],
+                function(_, __, widgetManager, messenger, mediator) {
+                    widgetManager.getWidgetInstance({{ app.request.get('_wid')|json_encode|raw }}, function(widget) {
+                        messenger.notificationFlashMessage('success', __('Worklog saved successfully'));
+                        mediator.trigger('widget_success:' + widget.getAlias());
+                        mediator.trigger('widget_success:' + widget.getWid());
+                        widget.remove();
+                        mediator.execute('refreshPage');
+                    });
+                });
+    </script>
+    {% else %}
+    <div class="form-container">
+        <form id="{{ form.vars.name }}" action="{{ formAction }}" method="post">
+            <fieldset class="form form-horizontal">
+                <div class="span6">
+                    {{ form_row(form.timeSpent) }}
+                    {{ form_row(form.dateStarted) }}
+                    {{ form_row(form.description) }}
+                </div>
+                {{ form_rest(form) }}
+                <div class="widget-actions form-actions">
+                    <button class="btn" type="reset">{{ 'Cancel'|trans }}</button>
+                    <button class="btn btn-primary" type="submit">{{ 'Save'|trans }}</button>
+                </div>
+            </fieldset>
+        </form>
+        <script type="text/javascript">
+            require(['jquery', 'jquery.validate'],
+            function($) {
+                $.validator.loadMethod('raorocrmtimelap/js/validator/timespent');
+            });
+        </script>
+        {{ oro_form_js_validation(form) }}
+    </div>
+    {% endif %}
+</div>

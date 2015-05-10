@@ -1,0 +1,81 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="timelap.twig.extension" class="RA\OroCrmTimeLapBundle\Twig\TimeTrackingExtension">
+            <argument type="service" id="timelap.total_timespent.calculator"/>
+            <argument type="service" id="timelap.worklog.repository"/>
+            <argument type="service" id="timelap.tracker.repository"/>
+            <argument type="service" id="router"/>
+            <argument type="service" id="oro_attachment.manager"/>
+            <argument type="service" id="security.context"/>
+            <tag name="twig.extension"/>
+        </service>
+
+        <service id="timelap.twig.calendar.extension" class="RA\OroCrmTimeLapBundle\Twig\CalendarExtension">
+            <tag name="twig.extension"/>
+        </service>
+
+        <service id="timelap.calendar.factory" class="RA\OroCrmTimeLapBundle\Calendar\Factory">
+            <argument type="service" id="oro_locale.settings"/>
+        </service>
+
+        <service id="timelap.calendar.service" class="RA\OroCrmTimeLapBundle\Calendar\Calendar">
+            <argument type="service" id="timelap.calendar.factory"/>
+        </service>
+
+        <service id="timelap.worklog.repository" class="RA\OroCrmTimeLapBundle\Infrastructure\Persistence\DoctrineWorklogRepository"
+                factory-service="doctrine.orm.entity_manager" factory-method="getRepository">
+            <argument type="string">RA\OroCrmTimeLapBundle\Entity\Worklog</argument>
+        </service>
+
+        <service id="timelap.tracker.repository" class="RA\OroCrmTimeLapBundle\Infrastructure\Persistence\DoctrineTrackerRepository"
+                 factory-service="doctrine.orm.entity_manager" factory-method="getRepository">
+            <argument type="string">RA\OroCrmTimeLapBundle\Entity\Tracker</argument>
+        </service>
+
+        <service id="timelap.orocrmtask.repository" class="OroCRM\Bundle\TaskBundle\Entity\Repository\TaskRepository"
+                 factory-service="doctrine.orm.entity_manager" factory-method="getRepository">
+            <argument type="string">OroCRM\Bundle\TaskBundle\Entity\Task</argument>
+        </service>
+
+        <service id="timelap.worklog.factory" class="RA\OroCrmTimeLapBundle\Infrastructure\WorklogFactory"/>
+
+        <service id="timelap.tracker.factory" class="RA\OroCrmTimeLapBundle\Infrastructure\TrackerFactory"/>
+
+        <service id="timelap.time_spent.factory" class="RA\OroCrmTimeLapBundle\Model\TimeSpentFactory"/>
+
+        <service id="timelap.total_timespent.calculator" class="RA\OroCrmTimeLapBundle\Model\TotalTimeSpentCalculator">
+            <argument type="service" id="timelap.worklog.repository"/>
+        </service>
+
+        <service id="timelap.period.factory" class="RA\OroCrmTimeLapBundle\Model\PeriodFactory">
+            <argument type="service" id="oro_locale.settings"/>
+        </service>
+
+        <service id="timelap.worklog.service" class="RA\OroCrmTimeLapBundle\Services\Impl\WorklogServiceImpl">
+            <argument type="service" id="timelap.worklog.repository"/>
+            <argument type="service" id="timelap.worklog.factory"/>
+            <argument type="service" id="timelap.time_spent.factory"/>
+            <argument type="service" id="timelap.orocrmtask.repository"/>
+            <argument type="service" id="security.context"/>
+        </service>
+
+        <service id="timelap.tracker.service" class="RA\OroCrmTimeLapBundle\Services\Impl\TrackerServiceImpl">
+            <argument type="service" id="timelap.worklog.repository"/>
+            <argument type="service" id="timelap.worklog.factory"/>
+            <argument type="service" id="timelap.time_spent.factory"/>
+            <argument type="service" id="timelap.tracker.repository"/>
+            <argument type="service" id="timelap.tracker.factory"/>
+        </service>
+
+        <service id="timelap.timesheet.service" class="RA\OroCrmTimeLapBundle\Services\Impl\TimeSheetServiceImpl">
+            <argument type="service" id="timelap.worklog.repository"/>
+            <argument type="service" id="timelap.period.factory"/>
+            <argument type="service" id="oro_locale.settings"/>
+        </service>
+    </services>
+</container>

@@ -1,0 +1,4 @@
+ra_oro_crm_time_tracking_bundle:
+    resource:     "@RAOroCrmTimeLapBundle/Controller"
+    type:         annotation
+    prefix:       /timeTracking

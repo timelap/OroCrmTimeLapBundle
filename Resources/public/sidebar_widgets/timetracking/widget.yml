@@ -1,0 +1,7 @@
+title:     "TimeTracking"
+icon:      "bundles/raorocrmtimelap/sidebar_widgets/timetracking/img/icon.ico"
+module:    "raorocrmtimelap/sidebar/widget/timetracking"
+placement: "both"
+cssClass:  "sidebar-widget-assigned-tasks"
+settings:
+    perPage: 5
