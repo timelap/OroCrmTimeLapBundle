@@ -16,7 +16,7 @@
     },
     "target-dir": "RA/OroCrmTimeLapBundle",
     "require": {
-        "php": ">=5.4.4",
+        "php": ">=5.5.0",
         "oro/crm": "1.9.*"
     },
     "require-dev": {
