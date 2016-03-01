@@ -16,8 +16,8 @@
     },
     "target-dir": "RA/OroCrmTimeLapBundle",
     "require": {
-        "php": ">=5.4.4",
-        "oro/crm": "1.7.*"
+        "php": ">=5.5.0",
+        "oro/crm": "1.9.*"
     },
     "require-dev": {
         "eltrino/phpunit-mockannotations": "*"
